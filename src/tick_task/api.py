@@ -201,8 +201,7 @@ async def delete_task(
     response_model=TaskList,
     summary="List tasks",
     description=(
-        "Retrieve a list of tasks with optional filtering, sorting, "
-        "and pagination"
+        "Retrieve a list of tasks with optional filtering, sorting, and pagination"
     ),
 )
 async def list_tasks(
