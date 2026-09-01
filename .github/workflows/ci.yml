@@ -166,6 +166,18 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    # The eslint pre-commit hook builds its own node env, and without this it
+    # gets the RUNNER DEFAULT (Node 24) while every other job pins 20. On 24,
+    # @typescript-eslint 6.x fails to load:
+    #   TypeError: Failed to load plugin '@typescript-eslint' ...
+    #   Cannot read properties of undefined
+    # The hook passed locally on Node 20 and failed only in CI, which is what
+    # an unpinned runtime looks like.
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
     - name: Install quality tools
       run: |
         python -m pip install --upgrade pip
