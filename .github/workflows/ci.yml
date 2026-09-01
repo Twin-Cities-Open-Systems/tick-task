@@ -197,7 +197,17 @@ jobs:
     - name: Install quality tools
       run: |
         python -m pip install --upgrade pip
-        pip install black isort flake8 mypy pre-commit
+        # black and isort PINNED to the exact versions .pre-commit-config.yaml
+        # uses (black 23.12.1, isort 5.13.2). Unpinned, pip installs latest --
+        # black 25.x formats differently from 23.12.1, so "Run pre-commit
+        # hooks" and "Check code formatting" ran the same tool at two versions
+        # and disagreed. Observed: pre-commit passed every hook, then the very
+        # next step reported `would reformat ci_monitor.py`.
+        #
+        # flake8/mypy left unpinned deliberately: they are linters, not
+        # formatters, so a newer version surfaces new findings rather than
+        # fighting an existing one.
+        pip install 'black==23.12.1' 'isort==5.13.2' flake8 mypy pre-commit
 
     - name: Run pre-commit hooks
       run: |
