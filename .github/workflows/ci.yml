@@ -8,7 +8,11 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  NODE_VERSION: "18"
+  # 20, not 18: vitest declares node "^20.0.0 || ^22.0.0 || >=24.0.0", and on
+  # 18 it died with "The requested module 'node:util' does not provide an
+  # export named 'styleText'" -- styleText landed in Node 20.12. Node 18 is
+  # also past end-of-life.
+  NODE_VERSION: "20"
 
 jobs:
   # Backend Testing
