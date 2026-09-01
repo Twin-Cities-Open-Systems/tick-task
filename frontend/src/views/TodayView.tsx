@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useTasks, useUpdateTask } from '../hooks/useTasks';
+import type { Task } from '../types/api';
 
 interface TodayViewProps {
   onAddTask: () => void;
@@ -32,7 +33,7 @@ export function TodayView({ onAddTask }: TodayViewProps) {
     updateTaskMutation.mutate({ id: taskId, task: { status: newStatus } });
   };
 
-  const startEditing = (task: any) => {
+  const startEditing = (task: Task) => {
     setEditingTaskId(task.id);
     setEditForm({ title: task.title, description: task.description || '' });
   };

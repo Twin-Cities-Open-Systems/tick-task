@@ -35,7 +35,7 @@ class DevelopmentMetricsCalculator:
         self.rates = {
             "senior_engineer_daily": 288,  # $150k/year
             "ai_orchestrator_daily": 230,  # $120k/year
-            "ai_api_costs_daily": 50,      # Estimated AI tooling costs
+            "ai_api_costs_daily": 50,  # Estimated AI tooling costs
         }
 
         # Traditional team composition for similar projects
@@ -57,7 +57,7 @@ class DevelopmentMetricsCalculator:
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
             )
             return result.stdout.strip()
         except subprocess.CalledProcessError as e:
@@ -68,7 +68,7 @@ class DevelopmentMetricsCalculator:
     def parse_commit_time(self, commit_info: str) -> Optional[datetime]:
         """Parse commit date from git log output."""
         # Look for date in format: Date:   Mon Jan 20 14:30:45 2025 -0600
-        date_match = re.search(r'Date:\s+(.+)', commit_info)
+        date_match = re.search(r"Date:\s+(.+)", commit_info)
         if date_match:
             try:
                 # Parse git date format
@@ -90,7 +90,7 @@ class DevelopmentMetricsCalculator:
             "log",
             "--pretty=format:COMMIT_START%n%H%n%aN%n%aE%n%at%n%s%n%b%nCOMMIT_END",
             "--date=iso",
-            "--since=2024-12-01"  # Project start date
+            "--since=2024-12-01",  # Project start date
         ]
 
         git_output = self.run_git_command(cmd)
@@ -98,25 +98,25 @@ class DevelopmentMetricsCalculator:
         commits = []
         current_commit = {}
 
-        for line in git_output.split('\n'):
-            if line == 'COMMIT_START':
+        for line in git_output.split("\n"):
+            if line == "COMMIT_START":
                 current_commit = {}
-            elif line == 'COMMIT_END':
+            elif line == "COMMIT_END":
                 if current_commit:
                     commits.append(current_commit)
-            elif 'hash' not in current_commit:
-                current_commit['hash'] = line
-            elif 'author' not in current_commit:
-                current_commit['author'] = line
-            elif 'email' not in current_commit:
-                current_commit['email'] = line
-            elif 'timestamp' not in current_commit:
-                current_commit['timestamp'] = int(line)
-                current_commit['datetime'] = datetime.fromtimestamp(int(line))
-            elif 'subject' not in current_commit:
-                current_commit['subject'] = line
+            elif "hash" not in current_commit:
+                current_commit["hash"] = line
+            elif "author" not in current_commit:
+                current_commit["author"] = line
+            elif "email" not in current_commit:
+                current_commit["email"] = line
+            elif "timestamp" not in current_commit:
+                current_commit["timestamp"] = int(line)
+                current_commit["datetime"] = datetime.fromtimestamp(int(line))
+            elif "subject" not in current_commit:
+                current_commit["subject"] = line
             else:
-                current_commit['body'] = current_commit.get('body', '') + line + '\n'
+                current_commit["body"] = current_commit.get("body", "") + line + "\n"
 
         # Analyze commits by phase/feature
         phases = {
@@ -128,24 +128,40 @@ class DevelopmentMetricsCalculator:
         }
 
         for commit in commits:
-            subject = commit.get('subject', '').lower()
-            body = commit.get('body', '').lower()
+            subject = commit.get("subject", "").lower()
+            body = commit.get("body", "").lower()
 
             # Categorize commits
-            if any(keyword in subject or keyword in body for keyword in
-                   ['spec', 'architecture', 'api', 'data model', 'requirements']):
+            if any(
+                keyword in subject or keyword in body
+                for keyword in [
+                    "spec",
+                    "architecture",
+                    "api",
+                    "data model",
+                    "requirements",
+                ]
+            ):
                 phases["Phase 1: Spec & Architecture"].append(commit)
-            elif any(keyword in subject or keyword in body for keyword in
-                   ['design', 'strategy', 'ui', 'ux', 'testing', 'ci', 'cd']):
+            elif any(
+                keyword in subject or keyword in body
+                for keyword in ["design", "strategy", "ui", "ux", "testing", "ci", "cd"]
+            ):
                 phases["Phase 2: Design & Strategy"].append(commit)
-            elif any(keyword in subject or keyword in body for keyword in
-                   ['inline', 'editing', 'edit']):
+            elif any(
+                keyword in subject or keyword in body
+                for keyword in ["inline", "editing", "edit"]
+            ):
                 phases["Inline Task Editing"].append(commit)
-            elif any(keyword in subject or keyword in body for keyword in
-                   ['markdown', 'react-markdown']):
+            elif any(
+                keyword in subject or keyword in body
+                for keyword in ["markdown", "react-markdown"]
+            ):
                 phases["Markdown Support"].append(commit)
-            elif any(keyword in subject or keyword in body for keyword in
-                   ['portability', 'adr', 'documentation', 'readme']):
+            elif any(
+                keyword in subject or keyword in body
+                for keyword in ["portability", "adr", "documentation", "readme"]
+            ):
                 phases["Portability Architecture"].append(commit)
 
         # Calculate time per phase (assuming 4 hours per commit on average)
@@ -155,8 +171,8 @@ class DevelopmentMetricsCalculator:
             estimated_hours = commit_count * 4  # Rough estimate
 
             if commits_list:
-                start_date = min(c['datetime'] for c in commits_list)
-                end_date = max(c['datetime'] for c in commits_list)
+                start_date = min(c["datetime"] for c in commits_list)
+                end_date = max(c["datetime"] for c in commits_list)
                 calendar_days = (end_date - start_date).days + 1
             else:
                 calendar_days = 0
@@ -180,7 +196,7 @@ class DevelopmentMetricsCalculator:
                 with open(coverage_file) as f:
                     content = f.read()
                     # Extract coverage percentage
-                    coverage_match = re.search(r'(\d+)%', content)
+                    coverage_match = re.search(r"(\d+)%", content)
                     if coverage_match:
                         metrics["test_coverage"] = int(coverage_match.group(1))
         except:
@@ -191,8 +207,9 @@ class DevelopmentMetricsCalculator:
         metrics["test_files"] = len(test_files)
 
         # Count source files
-        src_files = list((self.repo_path / "src").glob("**/*.py")) + \
-                   list((self.repo_path / "frontend" / "src").glob("**/*.{ts,tsx}"))
+        src_files = list((self.repo_path / "src").glob("**/*.py")) + list(
+            (self.repo_path / "frontend" / "src").glob("**/*.{ts,tsx}")
+        )
         metrics["source_files"] = len(src_files)
 
         # Documentation files
@@ -208,7 +225,9 @@ class DevelopmentMetricsCalculator:
 
         # Calculate AI-orchestrated costs
         total_ai_hours = sum(phase["estimated_hours"] for phase in time_data.values())
-        total_calendar_days = max((phase["calendar_days"] for phase in time_data.values()), default=0)
+        total_calendar_days = max(
+            (phase["calendar_days"] for phase in time_data.values()), default=0
+        )
 
         ai_orchestrator_cost = total_calendar_days * self.rates["ai_orchestrator_daily"]
         ai_api_costs = total_calendar_days * self.rates["ai_api_costs_daily"]
@@ -217,7 +236,9 @@ class DevelopmentMetricsCalculator:
         # Calculate traditional development costs
         traditional_person_weeks = 0
         for role, details in self.traditional_team.items():
-            traditional_person_weeks += details["count"] * (details["weeks"] / 5)  # Convert to person-weeks
+            traditional_person_weeks += details["count"] * (
+                details["weeks"] / 5
+            )  # Convert to person-weeks
 
         traditional_daily_cost = sum(
             details["count"] * self.rates["senior_engineer_daily"]
@@ -242,10 +263,16 @@ class DevelopmentMetricsCalculator:
                 "daily_rate": traditional_daily_cost,
             },
             "efficiency": {
-                "cost_savings_low": traditional_cost_low / total_ai_cost if total_ai_cost > 0 else 0,
-                "cost_savings_high": traditional_cost_high / total_ai_cost if total_ai_cost > 0 else 0,
-                "time_savings": 133 / total_calendar_days if total_calendar_days > 0 else 0,  # vs 133 working days
-            }
+                "cost_savings_low": (
+                    traditional_cost_low / total_ai_cost if total_ai_cost > 0 else 0
+                ),
+                "cost_savings_high": (
+                    traditional_cost_high / total_ai_cost if total_ai_cost > 0 else 0
+                ),
+                "time_savings": (
+                    133 / total_calendar_days if total_calendar_days > 0 else 0
+                ),  # vs 133 working days
+            },
         }
 
     def generate_report(self, output_format: str = "markdown") -> str:
@@ -255,22 +282,29 @@ class DevelopmentMetricsCalculator:
         cost_data = self.calculate_cost_analysis()
 
         if output_format == "json":
-            return json.dumps({
-                "time_analysis": time_data,
-                "quality_metrics": quality_data,
-                "cost_analysis": cost_data,
-                "generated_at": datetime.now().isoformat(),
-            }, indent=2)
+            return json.dumps(
+                {
+                    "time_analysis": time_data,
+                    "quality_metrics": quality_data,
+                    "cost_analysis": cost_data,
+                    "generated_at": datetime.now().isoformat(),
+                },
+                indent=2,
+            )
 
         elif output_format == "markdown":
-            report = [f"# Development Metrics Report\n\nGenerated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"]
+            report = [
+                f"# Development Metrics Report\n\nGenerated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            ]
 
             # Time Analysis
             report.append("## Time Analysis by Phase\n")
             report.append("| Phase | Commits | Est. Hours | Calendar Days |")
             report.append("|-------|---------|------------|---------------|")
             for phase, data in time_data.items():
-                report.append(f"| {phase} | {data['commits']} | {data['estimated_hours']} | {data['calendar_days']} |")
+                report.append(
+                    f"| {phase} | {data['commits']} | {data['estimated_hours']} | {data['calendar_days']} |"
+                )
             report.append("")
 
             # Quality Metrics
@@ -291,15 +325,23 @@ class DevelopmentMetricsCalculator:
             report.append(f"- Total Time: {ai['hours']} hours ({ai['days']} days)")
             report.append("")
 
-            report.append(f"### Traditional Development Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}")
-            report.append(f"- Team Size: {sum(d['count'] for d in self.traditional_team.values())} people")
+            report.append(
+                f"### Traditional Development Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}"
+            )
+            report.append(
+                f"- Team Size: {sum(d['count'] for d in self.traditional_team.values())} people"
+            )
             report.append(f"- Person-Weeks: {trad['person_weeks']:.0f}")
             report.append("")
 
             report.append("### Efficiency Gains")
-            report.append(f"- **Cost Savings**: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x")
+            report.append(
+                f"- **Cost Savings**: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x"
+            )
             report.append(f"- **Time Savings**: {eff['time_savings']:.1f}x faster")
-            report.append(f"- **Resource Efficiency**: {trad['person_weeks']/ai['days']:.0f}x more efficient")
+            report.append(
+                f"- **Resource Efficiency**: {trad['person_weeks']/ai['days']:.0f}x more efficient"
+            )
 
             return "\n".join(report)
 
@@ -309,7 +351,9 @@ class DevelopmentMetricsCalculator:
 
             print("🕒 Development Time Analysis:")
             for phase, data in time_data.items():
-                print(f"  {phase}: {data['estimated_hours']} hours, {data['calendar_days']} days")
+                print(
+                    f"  {phase}: {data['estimated_hours']} hours, {data['calendar_days']} days"
+                )
 
             print("\n💰 Cost Analysis:")
             ai = cost_data["ai_orchestrated"]
@@ -317,8 +361,12 @@ class DevelopmentMetricsCalculator:
             eff = cost_data["efficiency"]
 
             print(f"  AI Cost: ${ai['total_cost']:,.0f} ({ai['days']} days)")
-            print(f"  Traditional Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}")
-            print(f"  Cost Savings: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x")
+            print(
+                f"  Traditional Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}"
+            )
+            print(
+                f"  Cost Savings: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x"
+            )
             print(f"  Time Savings: {eff['time_savings']:.1f}x faster")
 
             return "Report printed to console"
@@ -329,13 +377,19 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Calculate development metrics")
-    parser.add_argument("--output-format", choices=["json", "markdown", "console"],
-                       default="markdown", help="Output format")
+    parser.add_argument(
+        "--output-format",
+        choices=["json", "markdown", "console"],
+        default="markdown",
+        help="Output format",
+    )
     parser.add_argument("--output-file", help="Output file (default: stdout)")
-    parser.add_argument("--phase-analysis", action="store_true",
-                       help="Detailed phase analysis")
-    parser.add_argument("--cost-analysis", action="store_true",
-                       help="Focus on cost analysis")
+    parser.add_argument(
+        "--phase-analysis", action="store_true", help="Detailed phase analysis"
+    )
+    parser.add_argument(
+        "--cost-analysis", action="store_true", help="Focus on cost analysis"
+    )
 
     args = parser.parse_args()
 
@@ -358,14 +412,18 @@ def main():
         eff = cost_data["efficiency"]
 
         print(f"AI Cost: ${ai['total_cost']:,.0f}")
-        print(f"Traditional Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}")
-        print(f"Cost Savings: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x")
+        print(
+            f"Traditional Cost: ${trad['cost_range'][0]:,.0f} - ${trad['cost_range'][1]:,.0f}"
+        )
+        print(
+            f"Cost Savings: {eff['cost_savings_low']:.0f}x - {eff['cost_savings_high']:.0f}x"
+        )
 
     else:
         report = calculator.generate_report(args.output_format)
 
         if args.output_file:
-            with open(args.output_file, 'w') as f:
+            with open(args.output_file, "w") as f:
                 f.write(report)
             print(f"Report saved to {args.output_file}")
         else:

@@ -47,7 +47,7 @@ class TestGlobalSettings:
 
     def test_global_settings_has_database_url(self):
         """Test that global settings has a database URL."""
-        assert hasattr(settings, 'database_url')
+        assert hasattr(settings, "database_url")
         assert settings.database_url is not None
 
     def test_global_settings_database_url_is_sqlite(self):

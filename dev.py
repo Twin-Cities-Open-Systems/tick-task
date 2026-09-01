@@ -34,8 +34,9 @@ class DevServer:
         # Check Python dependencies
         try:
             import fastapi
-            import sqlalchemy
             import pydantic
+            import sqlalchemy
+
             print("✅ Python dependencies installed")
         except ImportError as e:
             print(f"❌ Missing Python dependency: {e}")
@@ -45,18 +46,12 @@ class DevServer:
         # Check Node.js and npm
         try:
             result = subprocess.run(
-                ["node", "--version"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["node", "--version"], capture_output=True, text=True, check=True
             )
             print(f"✅ Node.js installed: {result.stdout.strip()}")
 
             result = subprocess.run(
-                ["npm", "--version"],
-                capture_output=True,
-                text=True,
-                check=True
+                ["npm", "--version"], capture_output=True, text=True, check=True
             )
             print(f"✅ npm installed: {result.stdout.strip()}")
         except (subprocess.CalledProcessError, FileNotFoundError):
@@ -79,11 +74,7 @@ class DevServer:
         if not node_modules.exists():
             print("📦 Installing frontend dependencies...")
             try:
-                subprocess.run(
-                    ["npm", "install"],
-                    cwd=frontend_dir,
-                    check=True
-                )
+                subprocess.run(["npm", "install"], cwd=frontend_dir, check=True)
                 print("✅ Frontend dependencies installed")
             except subprocess.CalledProcessError as e:
                 print(f"❌ Failed to install frontend dependencies: {e}")
@@ -112,7 +103,7 @@ class DevServer:
                 stderr=subprocess.PIPE,
                 text=True,
                 bufsize=1,
-                universal_newlines=True
+                universal_newlines=True,
             )
 
             # Wait a bit for server to start
@@ -150,7 +141,7 @@ class DevServer:
                 stderr=subprocess.PIPE,
                 text=True,
                 bufsize=1,
-                universal_newlines=True
+                universal_newlines=True,
             )
 
             # Wait a bit for server to start
@@ -256,18 +247,12 @@ class DevServer:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Start FIN-tasks development servers"
+    parser = argparse.ArgumentParser(description="Start FIN-tasks development servers")
+    parser.add_argument(
+        "--backend-only", action="store_true", help="Start only the backend server"
     )
     parser.add_argument(
-        "--backend-only",
-        action="store_true",
-        help="Start only the backend server"
-    )
-    parser.add_argument(
-        "--frontend-only",
-        action="store_true",
-        help="Start only the frontend server"
+        "--frontend-only", action="store_true", help="Start only the frontend server"
     )
 
     args = parser.parse_args()
@@ -276,10 +261,7 @@ def main():
         print("❌ Cannot specify both --backend-only and --frontend-only")
         return 1
 
-    server = DevServer(
-        backend_only=args.backend_only,
-        frontend_only=args.frontend_only
-    )
+    server = DevServer(backend_only=args.backend_only, frontend_only=args.frontend_only)
 
     return server.run()
 

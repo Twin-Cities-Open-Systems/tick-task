@@ -282,9 +282,9 @@ async def list_tasks(
         tasks=[TaskSchema.from_orm(task) for task in task_list],
         pagination={
             "has_more": len(task_list) == limit,
-            "next_cursor": f"offset_{len(task_list)}"
-            if len(task_list) == limit
-            else None,
+            "next_cursor": (
+                f"offset_{len(task_list)}" if len(task_list) == limit else None
+            ),
             "total_count": len(task_list),
         },
     )
