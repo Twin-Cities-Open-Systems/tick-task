@@ -7,7 +7,7 @@
 # It does NOT replace the desktop distribution path -- docs/DECISIONS.md chose
 # PyInstaller for handing the app to an end user, and that decision stands.
 # Container and PyInstaller are peer formats in the HEE release system's
-# packaging matrix (prompts/hee/docs/MODULES/RELEASE_SYSTEM.md), not
+# packaging matrix, not
 # alternatives to each other.
 #
 # API only: the app mounts no static files and / redirects to /docs. The vite
