@@ -177,6 +177,22 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
+        cache: npm
+        cache-dependency-path: frontend/package-lock.json
+
+    # eslint resolves the plugins named in .eslintrc.cjs relative to the
+    # CONFIG FILE's tree, not to the eslint binary -- so pre-commit's
+    # additional_dependencies alone is not enough and the hook needs
+    # frontend/node_modules to exist.
+    #
+    # Reproduced exactly: moving frontend/node_modules aside locally produces
+    # the identical CI failure,
+    #   TypeError: Failed to load plugin '@typescript-eslint' ...
+    # and restoring it makes the hook pass. The hook "passing locally" was
+    # only ever passing because those modules happened to be installed.
+    - name: Install frontend deps (eslint hook resolves plugins from here)
+      run: npm ci
+      working-directory: frontend
 
     - name: Install quality tools
       run: |
