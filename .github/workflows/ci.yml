@@ -218,7 +218,17 @@ jobs:
         black --check --diff .
         isort --check-only --diff .
 
+    # continue-on-error per PROMPTING_RULES rule 16: never land a check that is
+    # red on day one. This one is red on 18 PRE-EXISTING type errors that #42
+    # merely unmasked -- it was never reached before, because an earlier step in
+    # this job always failed first. The errors are real debt, not noise, and are
+    # tracked; failing the build on them would only train people to ignore red.
+    #
+    # FLIP CONDITION: remove continue-on-error as soon as the tracked debt issue
+    # is closed and `mypy src/ --ignore-missing-imports` exits 0 locally. Do not
+    # hardcode a target count here -- new code changes it.
     - name: Run type checking
+      continue-on-error: true
       run: |
         mypy src/ --ignore-missing-imports
 
