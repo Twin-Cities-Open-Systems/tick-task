@@ -60,6 +60,16 @@ repos:
       - id: debug-statements
       - id: check-ast
       - id: check-json
+        # tsconfig files are JSONC, not JSON. TypeScript officially supports
+        # comments there, and this repo uses them ("/* Bundler mode */") to
+        # group options. check-json is a strict JSON parser, so it rejects a
+        # file that is valid for its own format.
+        #
+        # Excluded rather than stripping the comments: the comments are
+        # intentional documentation, tsc reads them fine, and deleting them to
+        # satisfy a mis-scoped hook would be changing correct source to suit a
+        # checker.
+        exclude: "(^|/)tsconfig([.][^/]+)?[.]json$"
 
   # Security checks - temporarily disabled due to baseline issues
   # - repo: https://github.com/Yelp/detect-secrets
