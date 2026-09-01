@@ -6,18 +6,15 @@ from typing import AsyncGenerator, Generator
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from sqlalchemy import text
-
 from tick_task.config import settings
 from tick_task.database import get_db
-from tick_task.models import Base
 from tick_task.main import app
-from tick_task.models import Task
+from tick_task.models import Base, Task
 
 
 @pytest.fixture(scope="session")

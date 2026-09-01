@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tick_task.config import settings
 from tick_task.database import get_db
 from tick_task.models import Task
 from tick_task.schemas import ErrorResponse, HealthResponse
@@ -201,7 +200,9 @@ async def delete_task(
     "/tasks",
     response_model=TaskList,
     summary="List tasks",
-    description="Retrieve a list of tasks with optional filtering, sorting, and pagination",
+    description=(
+        "Retrieve a list of tasks with optional filtering, sorting, and pagination"
+    ),
 )
 async def list_tasks(
     # Filtering parameters
@@ -282,9 +283,9 @@ async def list_tasks(
         tasks=[TaskSchema.from_orm(task) for task in task_list],
         pagination={
             "has_more": len(task_list) == limit,
-            "next_cursor": f"offset_{len(task_list)}"
-            if len(task_list) == limit
-            else None,
+            "next_cursor": (
+                f"offset_{len(task_list)}" if len(task_list) == limit else None
+            ),
             "total_count": len(task_list),
         },
     )

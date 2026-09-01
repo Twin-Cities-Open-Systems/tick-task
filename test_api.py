@@ -4,15 +4,17 @@ Quick API testing script using FastAPI TestClient.
 Run this to test API endpoints without starting a server.
 """
 
-import sys
 import os
+import sys
 from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 from fastapi.testclient import TestClient
+
 from tick_task.main import create_application
+
 
 def test_api():
     """Test API endpoints using TestClient."""
@@ -62,6 +64,7 @@ def test_api():
             print(f"❌ Root endpoint failed: {response.status_code}")
     except Exception as e:
         print(f"❌ Root endpoint error: {e}")
+
 
 if __name__ == "__main__":
     test_api()

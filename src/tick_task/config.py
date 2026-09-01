@@ -1,11 +1,10 @@
 """Application configuration."""
 
-import os
 from pathlib import Path
 from typing import Optional
 
-from pydantic_settings import BaseSettings
 from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -18,14 +17,12 @@ class Settings(BaseSettings):
 
     # Database settings
     database_url: str = Field(
-        "sqlite+aiosqlite:///./tick-task.db",
-        description="Database connection URL"
+        "sqlite+aiosqlite:///./tick-task.db", description="Database connection URL"
     )
 
     # Application settings
     data_dir: Path = Field(
-        Path.home() / ".tick-task",
-        description="Data directory path"
+        Path.home() / ".tick-task", description="Data directory path"
     )
 
     # LAN mode settings (disabled by default)
@@ -34,6 +31,7 @@ class Settings(BaseSettings):
 
     class Config:
         """Pydantic configuration."""
+
         env_prefix = "TICK_TASK_"
         case_sensitive = False
 

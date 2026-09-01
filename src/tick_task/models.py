@@ -4,16 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Integer,
-    String,
-    Text,
-    func,
-)
+from sqlalchemy import DateTime, Enum, String, Text
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -38,24 +29,24 @@ class Task(Base):
     def __init__(self, **kwargs):
         """Initialize Task with defaults."""
         # Set Python-level defaults if not provided
-        if 'id' not in kwargs:
-            kwargs['id'] = str(uuid4())
-        if 'status' not in kwargs:
-            kwargs['status'] = "todo"
-        if 'priority' not in kwargs:
-            kwargs['priority'] = "medium"
-        if 'context' not in kwargs:
-            kwargs['context'] = "personal"
-        if 'tags' not in kwargs:
-            kwargs['tags'] = []
-        if 'created_at' not in kwargs:
-            kwargs['created_at'] = datetime.utcnow()
-        if 'updated_at' not in kwargs:
-            kwargs['updated_at'] = datetime.utcnow()
+        if "id" not in kwargs:
+            kwargs["id"] = str(uuid4())
+        if "status" not in kwargs:
+            kwargs["status"] = "todo"
+        if "priority" not in kwargs:
+            kwargs["priority"] = "medium"
+        if "context" not in kwargs:
+            kwargs["context"] = "personal"
+        if "tags" not in kwargs:
+            kwargs["tags"] = []
+        if "created_at" not in kwargs:
+            kwargs["created_at"] = datetime.utcnow()
+        if "updated_at" not in kwargs:
+            kwargs["updated_at"] = datetime.utcnow()
 
         # Handle completion timestamp for done tasks
-        if kwargs.get('status') == 'done' and 'completed_at' not in kwargs:
-            kwargs['completed_at'] = datetime.utcnow()
+        if kwargs.get("status") == "done" and "completed_at" not in kwargs:
+            kwargs["completed_at"] = datetime.utcnow()
 
         super().__init__(**kwargs)
 
@@ -93,9 +84,7 @@ class Task(Base):
     due_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     # Tags stored as JSON array with Python default
-    tags: Mapped[list[str]] = mapped_column(
-        JSON, nullable=False, default=list
-    )
+    tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
     # Context and workspace with Python default
     context: Mapped[str] = mapped_column(
@@ -109,9 +98,7 @@ class Task(Base):
         default="personal",
     )
 
-    workspace: Mapped[Optional[str]] = mapped_column(
-        String(100), nullable=True
-    )
+    workspace: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
 
     # Timestamps (UTC)
     created_at: Mapped[datetime] = mapped_column(
@@ -123,9 +110,7 @@ class Task(Base):
         default=datetime.utcnow,
         onupdate=datetime.utcnow,
     )
-    completed_at: Mapped[Optional[datetime]] = mapped_column(
-        DateTime, nullable=True
-    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self) -> str:
         """String representation of Task."""

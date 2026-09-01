@@ -1,14 +1,13 @@
 """Main FastAPI application."""
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from fastapi.responses import RedirectResponse
 
 from tick_task.api import router as api_router
+from tick_task.auth import require_lan_token
 from tick_task.config import settings
-from tick_task.database import create_tables
 
 
 def create_application() -> FastAPI:
@@ -25,7 +24,10 @@ def create_application() -> FastAPI:
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Vite dev server
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],  # Vite dev server
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -38,7 +40,14 @@ def create_application() -> FastAPI:
         return RedirectResponse(url="/docs")
 
     # Include API routes
-    app.include_router(api_router, prefix="/api/v1")
+    # Applied at the router, so every current AND future endpoint is covered.
+    # Attaching per-route would mean the next endpoint someone adds is open
+    # by default -- exactly how this gap persisted.
+    app.include_router(
+        api_router,
+        prefix="/api/v1",
+        dependencies=[Depends(require_lan_token)],
+    )
 
     return app
 
