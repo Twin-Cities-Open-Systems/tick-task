@@ -1,8 +1,9 @@
 """Tests for database models."""
 
-import pytest
 from datetime import datetime
 from uuid import UUID
+
+import pytest
 
 from tick_task.models import Task
 

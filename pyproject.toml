@@ -91,6 +91,11 @@ extend-exclude = '''
 
 # isort import sorting
 [tool.isort]
+# node_modules ships third-party Python (e.g. flatted/python/flatted.py).
+# It is vendored code we neither own nor format, and isort walks into it the
+# moment frontend deps are installed -- which CI now does, because the eslint
+# hook needs them.
+extend_skip_glob = ["*/node_modules/*", "node_modules/*"]
 profile = "black"
 multi_line_output = 3
 line_length = 88

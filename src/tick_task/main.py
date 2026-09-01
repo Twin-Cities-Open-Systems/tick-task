@@ -3,7 +3,6 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from fastapi.responses import RedirectResponse
 
 from tick_task.api import router as api_router
@@ -25,7 +24,10 @@ def create_application() -> FastAPI:
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Vite dev server
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ],  # Vite dev server
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

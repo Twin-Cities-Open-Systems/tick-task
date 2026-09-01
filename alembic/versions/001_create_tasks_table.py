@@ -5,9 +5,11 @@ Revises:
 Create Date: 2026-01-21 13:31:00.000000
 
 """
+
 from typing import Sequence, Union
 
 import sqlalchemy as sa
+
 from alembic import op
 
 # revision identifiers, used by Alembic.
@@ -25,11 +27,23 @@ def upgrade() -> None:
         sa.Column("id", sa.String(36), nullable=False),
         sa.Column("title", sa.String(200), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("status", sa.Enum("todo", "doing", "blocked", "done", "archived", name="task_status"), nullable=False),
-        sa.Column("priority", sa.Enum("low", "medium", "high", "urgent", name="task_priority"), nullable=False),
+        sa.Column(
+            "status",
+            sa.Enum("todo", "doing", "blocked", "done", "archived", name="task_status"),
+            nullable=False,
+        ),
+        sa.Column(
+            "priority",
+            sa.Enum("low", "medium", "high", "urgent", name="task_priority"),
+            nullable=False,
+        ),
         sa.Column("due_at", sa.DateTime(), nullable=True),
         sa.Column("tags", sa.JSON(), nullable=True),
-        sa.Column("context", sa.Enum("personal", "professional", "mixed", name="task_context"), nullable=False),
+        sa.Column(
+            "context",
+            sa.Enum("personal", "professional", "mixed", name="task_context"),
+            nullable=False,
+        ),
         sa.Column("workspace", sa.String(100), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
         sa.Column("updated_at", sa.DateTime(), nullable=False),
