@@ -192,12 +192,24 @@ jobs:
   security-scan:
     runs-on: ubuntu-latest
 
+    # upload-sarif writes to the code-scanning API. Without this the job runs
+    # with the default read-only token and fails with
+    # "Resource not accessible by integration". Scoped to exactly what the
+    # step needs -- nothing else in this job writes anything.
+    permissions:
+      contents: read
+      security-events: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
+      # Pinned, not @master. A branch ref means this action's code can change
+      # under CI with no release and no review on our side -- and this is the
+      # security scanner, so an unreviewed change alters what "security scan
+      # passed" means. See fleet-ops#211.
+      uses: aquasecurity/trivy-action@v0.36.0
       with:
         scan-type: 'fs'
         scan-ref: '.'
@@ -205,7 +217,8 @@ jobs:
         output: 'trivy-results.sarif'
 
     - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v2
+      # v3: v1 and v2 are deprecated and CI now errors on them outright.
+      uses: github/codeql-action/upload-sarif@v3
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
