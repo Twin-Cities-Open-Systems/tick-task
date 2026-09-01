@@ -8,7 +8,6 @@ from fastapi.responses import RedirectResponse
 from tick_task.api import router as api_router
 from tick_task.auth import require_lan_token
 from tick_task.config import settings
-from tick_task.database import create_tables
 
 
 def create_application() -> FastAPI:
