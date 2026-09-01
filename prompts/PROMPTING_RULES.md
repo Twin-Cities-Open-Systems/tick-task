@@ -48,4 +48,3 @@ Failure to do this is considered a **process violation**, even if the prompt con
 - Do not assume a future script will “fix it later”
 
 Agents are expected to enforce this rule proactively and call it out explicitly if violated.
-

@@ -4,16 +4,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Integer,
-    String,
-    Text,
-    func,
-)
+from sqlalchemy import Boolean, Column, DateTime, Enum, Integer, String, Text, func
 from sqlalchemy.dialects.sqlite import JSON
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column

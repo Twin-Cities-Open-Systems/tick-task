@@ -32,4 +32,3 @@ Commit messages in this PR include: `[model: ...]`
 - [ ] `prompts/` is the canonical source of truth
 - [ ] Corresponding `.cursor/prompts/` wrapper stubs were updated in the same commit
 - [ ] No authoritative instructions exist in `.cursor/prompts/`
-

@@ -116,13 +116,15 @@ def get_workflow_jobs(run_id):
 
 def display_header():
     """Display fancy header"""
-    print(f"""
+    print(
+        f"""
 {Colors.CYAN}{Colors.BOLD}
 ╔══════════════════════════════════════════════════════════════╗
 ║                     🚀 FIN-tasks CI/CD Monitor                    ║
 ║                     Real-time Pipeline Status                      ║
 ╚══════════════════════════════════════════════════════════════╝{Colors.END}
-""")
+"""
+    )
 
 
 def display_workflow_status(workflow_runs):
@@ -153,14 +155,16 @@ def display_workflow_status(workflow_runs):
     else:
         status_display = f"{Colors.YELLOW}⏳ {status.upper()}{Colors.END}"
 
-    print(f"""
+    print(
+        f"""
 {Colors.BOLD}Latest Workflow Run:{Colors.END}
 ├── Run ID: {Colors.CYAN}{run_id}{Colors.END}
 ├── Branch: {Colors.CYAN}{BRANCH}{Colors.END}
 ├── Status: {status_display}
 ├── Started: {Colors.WHITE}{created_at}{Colors.END}
 └── Updated: {Colors.WHITE}{updated_at}{Colors.END}
-""")
+"""
+    )
 
     return run_id, status, conclusion
 
