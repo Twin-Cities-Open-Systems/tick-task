@@ -33,12 +33,22 @@ repos:
       - id: eslint
         files: \.(js|jsx|ts|tsx)$
         types: [file]
+        # pre-commit builds an ISOLATED node env from this list -- it does not
+        # see frontend/node_modules. So every plugin .eslintrc.cjs references
+        # must appear here, at versions compatible with eslint 8, or the hook
+        # passes locally and fails in CI. That is exactly what happened:
+        # react-refresh was missing while `plugins: ['react-refresh']` is
+        # declared in the config.
+        #
+        # Versions pinned to the same majors as frontend/package.json.
+        # Unpinned, CI can resolve @typescript-eslint/eslint-plugin v8, which
+        # requires eslint 9 + flat config and breaks against eslint 8.
         additional_dependencies:
-          - eslint@^8.0.0
-          - "@typescript-eslint/parser"
-          - "@typescript-eslint/eslint-plugin"
-          - eslint-plugin-react
-          - eslint-plugin-react-hooks
+          - eslint@^8.57.0
+          - "@typescript-eslint/parser@^6.12.0"
+          - "@typescript-eslint/eslint-plugin@^6.12.0"
+          - eslint-plugin-react-hooks@^4.6.0
+          - eslint-plugin-react-refresh@^0.4.4
 
   # YAML formatting
   - repo: https://github.com/pre-commit/mirrors-prettier
