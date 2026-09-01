@@ -270,3 +270,69 @@ jobs:
       if: always()
       with:
         sarif_file: 'trivy-results.sarif'
+
+  # Restored 2026-09-01. Removed in 12e124d on the grounds that it "contradicts
+  # the recorded deployment decision" -- that read docs/DECISIONS.md line 220,
+  # whose Context is "How to distribute the application to end users". Docker was
+  # rejected there as an end-user distribution channel, alongside apt/brew/wheels.
+  # It says nothing about the LAN server shape docs/SPEC.md requires as
+  # MUST-API-002b, and the HEE release system lists Container as a peer format to
+  # PyInstaller. docs/ROADMAP.md keeps "Docker build successful" as a quality gate.
+  docker_build:
+    name: docker_build
+    runs-on: ubuntu-latest
+    needs: [backend_test, frontend_test]
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        # setuptools-scm needs history to derive a version.
+        fetch-depth: 0
+
+    - uses: docker/setup-buildx-action@v3
+
+    - name: Derive version for setuptools-scm
+      id: ver
+      run: echo "version=$(git describe --tags --always --dirty 2>/dev/null || echo 0.0.0+ci)" >> "$GITHUB_OUTPUT"
+
+    - name: Build image
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        file: ./Dockerfile
+        push: false
+        load: true
+        tags: tick-task:test
+        build-args: |
+          VERSION=${{ steps.ver.outputs.version }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # The previous job ended in `|| true`, so it asserted nothing at all. These
+    # assert the two properties that actually matter for a LAN-mode image.
+    - name: Refuses to start without a LAN token
+      run: |
+        set +e
+        out="$(docker run --rm tick-task:test 2>&1)"; rc=$?
+        set -e
+        echo "$out"
+        if [ "$rc" -ne 78 ]; then
+          echo "::error::expected exit 78 (EX_CONFIG) with no token, got $rc"
+          exit 1
+        fi
+        echo "OK: refused unauthenticated start with exit 78"
+
+    - name: Serves health when a token is supplied
+      run: |
+        docker run -d --name tt -e TICK_TASK_LAN_TOKEN=ci-smoke-token -p 7000:7000 tick-task:test
+        for i in $(seq 1 30); do
+          if curl -fsS http://127.0.0.1:7000/api/v1/health >/dev/null 2>&1; then
+            echo "OK: health responded after ${i}s"
+            docker rm -f tt >/dev/null
+            exit 0
+          fi
+          sleep 1
+        done
+        echo "::error::health endpoint never came up"
+        docker logs tt || true
+        docker rm -f tt >/dev/null || true
+        exit 1
