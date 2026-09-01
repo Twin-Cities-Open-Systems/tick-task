@@ -290,9 +290,27 @@ jobs:
 
     - uses: docker/setup-buildx-action@v3
 
+    # setuptools-scm requires a PEP 440 version. Raw `git describe` output is
+    # NOT one -- "v1.0.5-36-g01362f4" is rejected outright with
+    # "packaging.version.InvalidVersion", failing the build inside the image
+    # where the error is hard to read. Transform it here and validate it here,
+    # so a bad version fails at this step with an obvious message.
     - name: Derive version for setuptools-scm
       id: ver
-      run: echo "version=$(git describe --tags --always --dirty 2>/dev/null || echo 0.0.0+ci)" >> "$GITHUB_OUTPUT"
+      run: |
+        raw="$(git describe --tags --long --dirty 2>/dev/null || echo '')"
+        if [ -z "$raw" ]; then
+          ver="0.0.0+ci.$(git rev-parse --short HEAD)"
+        else
+          # v1.0.5-36-g01362f4[-dirty] -> 1.0.5.post36+g01362f4[.dirty]
+          # post-release form matches [tool.setuptools_scm] version_scheme.
+          ver="${raw#v}"
+          ver="$(printf '%s' "$ver" | sed -E 's/-([0-9]+)-g([0-9a-f]+)/.post\1+g\2/; s/-dirty/.dirty/')"
+        fi
+        python3 -c "from packaging.version import Version; Version('$ver')" \
+          || { echo "::error::derived version '$ver' is not PEP 440"; exit 1; }
+        echo "version=$ver" >> "$GITHUB_OUTPUT"
+        echo "derived version: $ver"
 
     - name: Build image
       uses: docker/build-push-action@v6
@@ -325,14 +343,24 @@ jobs:
       run: |
         docker run -d --name tt -e TICK_TASK_LAN_TOKEN=ci-smoke-token -p 7000:7000 tick-task:test
         for i in $(seq 1 30); do
-          if curl -fsS http://127.0.0.1:7000/api/v1/health >/dev/null 2>&1; then
+          if curl -fsS -H "Authorization: Bearer ci-smoke-token" \
+               http://127.0.0.1:7000/api/v1/health >/dev/null 2>&1; then
             echo "OK: health responded after ${i}s"
+            # And that it REFUSES an unauthenticated request. Without this the
+            # image could regress to serving open and still pass the check above.
+            code="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:7000/api/v1/health)"
+            if [ "$code" != "401" ]; then
+              echo "::error::unauthenticated request returned $code, expected 401"
+              docker rm -f tt >/dev/null
+              exit 1
+            fi
+            echo "OK: unauthenticated request refused with 401"
             docker rm -f tt >/dev/null
             exit 0
           fi
           sleep 1
         done
-        echo "::error::health endpoint never came up"
+        echo "::error::health endpoint never came up (with a valid token)"
         docker logs tt || true
         docker rm -f tt >/dev/null || true
         exit 1

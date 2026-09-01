@@ -71,8 +71,11 @@ USER tick-task
 WORKDIR /var/lib/tick-task
 EXPOSE 7000
 
+# The health endpoint is authenticated: require_lan_token guards every route
+# when lan_mode is on, so an unauthenticated probe gets 401 and the container
+# would report unhealthy forever. Send the token the same way a client does.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD python -c "import sys,urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:7000/api/v1/health', timeout=4).status == 200 else 1)"
+  CMD python -c "import os,sys,urllib.request as u; r=u.Request('http://127.0.0.1:7000/api/v1/health', headers={'Authorization': 'Bearer ' + os.environ.get('TICK_TASK_LAN_TOKEN','')}); sys.exit(0 if u.urlopen(r, timeout=4).status == 200 else 1)"
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["tick-task"]
