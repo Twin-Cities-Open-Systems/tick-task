@@ -111,7 +111,7 @@ Design local-first deployment and packaging strategy for tick-task application.
 - **Intuitive user experience**
 
 ## Output
-- Create docs/DEPLOYMENT.md with complete packaging strategy
-- Create docs/INSTALL.md with user-friendly installation guide
+- Create docs/DEPLOYMENT.md with complete packaging strategy <!-- hee-check:refs-ok the prompt asks for this file to be written -->
+- Create docs/INSTALL.md with user-friendly installation guide <!-- hee-check:refs-ok the prompt asks for this file to be written -->
 - Implement packaging scripts and configuration
 - Test installation process on target platforms

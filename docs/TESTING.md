@@ -69,6 +69,7 @@ def test_create_task_success(client, db_session):
 - Error boundaries and error states
 
 **Example Test Structure:**
+<!-- hee-check:refs-off example test structure: the file is what the reader writes -->
 ```typescript
 // frontend/src/components/TaskModal.test.tsx
 describe('TaskModal', () => {
@@ -88,6 +89,7 @@ describe('TaskModal', () => {
   });
 });
 ```
+<!-- hee-check:refs-on -->
 
 ### Component Integration Tests
 - **API Integration**: Mocked API responses

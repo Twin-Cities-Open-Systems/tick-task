@@ -93,7 +93,7 @@ Analyze and justify all third-party dependencies for the tick-task application.
 - Development: Additional tools only needed during development
 
 ## Output
-- Create docs/DEPENDENCIES.md with complete analysis
+- Create docs/DEPENDENCIES.md with complete analysis <!-- hee-check:refs-ok the prompt asks for this file to be written -->
 - Update docs/DECISIONS.md with dependency trade-offs
 - Ensure all dependencies align with local-first, minimal principles
 - Document any conditional dependencies (OAuth) with clear fallback strategies
