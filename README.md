@@ -1,7 +1,7 @@
 # tick-task 🎯
 
 [![CI/CD Pipeline](https://github.com/spencerbutler/tick-task/actions/workflows/ci.yml/badge.svg)](https://github.com/spencerbutler/tick-task/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Node 16+](https://img.shields.io/badge/node-16+-green.svg)](https://nodejs.org/)
 
@@ -191,7 +191,12 @@ Visit **http://localhost:5173** to access the application!
 
 ## 📄 License
 
-**MIT License** - see [LICENSE](LICENSE) file for details.
+**GNU General Public License v3.0** — see [LICENSE](LICENSE) for the full text.
+
+This repo previously carried an MIT badge pointing at a `LICENSE` file that did
+not exist, so it had no effective license at all and GitHub reported none. The
+org default is GPL-3.0 (operator, 2026-09-18); see
+https://github.com/Twin-Cities-Open-Systems/fleet-ops/issues/118.
 
 ## 🙏 Acknowledgments
 
