@@ -59,5 +59,5 @@ Create a complete implementation-ready architecture specification incorporating 
 ## Output
 - Update docs/ARCHITECTURE.md with complete implementation details
 - Add technology decisions to docs/DECISIONS.md
-- Create docs/DEPENDENCIES.md with justification for each third-party library
+- Create docs/DEPENDENCIES.md with justification for each third-party library <!-- hee-check:refs-ok the prompt asks for this file to be written -->
 - Ensure all choices support local-first, minimal-dependency principles
